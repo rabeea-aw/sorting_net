@@ -1,32 +1,21 @@
-//
-//  OddEvenSorter.hpp
-//  proj_1
-//
-//  Created by Rabeea on 26/03/2025.
-//
+#ifndef ODDEVEN_SORTER_HPP
+#define ODDEVEN_SORTER_HPP
 
-#ifndef OddEvenSorter_hpp
-#define OddEvenSorter_hpp
-
-#include <stdio.h>
+#include "Sorter.hpp"
 #include <vector>
+#include <utility>
 
-class OddEvenSorter {
+class OddEvenSorter : public Sorter {
+private:
+    mutable int swaps;
+    std::vector<std::pair<int, int>> swapPairs;
+
 public:
     OddEvenSorter();
-    
-    void sort(std::vector<int>& arr);
-    int depth(std::vector<int>& arr);
-    int getMaxSwaps() const;
-    const std::vector<std::pair<int, int>>& getSwapPairs() const;
-
-private:
-    int maxSwaps;                         // Total number of swaps
-    std::vector<std::pair<int, int>> swapPairs; // Record of swap pairs
-    
-    // Helper functions
-    bool isPowerOf2(int n);
-    int nextPowerOf2(int n);
-    void oddEvenSort(std::vector<int>& arr, int low, int n); // Renamed from batcherSort
+    void sort(std::vector<int>& arr) override;
+    std::vector<std::pair<int, int>> generateSwapPairs(int n) override;
+    int getMaxSwaps() const override;
+    int depth(const std::vector<int>& arr) const override;
 };
-#endif /* OddEvenSorter_hpp */
+
+#endif

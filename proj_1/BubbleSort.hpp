@@ -5,25 +5,24 @@
 //  Created by Rabeea on 13/03/2025.
 //
 
-#ifndef BubbleSort_hpp
-#define BubbleSort_hpp
+#ifndef BUBBLE_SORTER_HPP
+#define BUBBLE_SORTER_HPP
 
-#include <stdio.h>
+#include "Sorter.hpp"
 #include <vector>
-#include <algorithm> // For std::swap
 #include <utility>
-using namespace std;
-class BubbleSorter {
+
+class BubbleSorter : public Sorter {
 private:
-    vector<pair<int, int>> swapPairs;
-    int maxSwaps;
+    mutable int swaps;
+    std::vector<std::pair<int, int>> swapPairs;
 
 public:
     BubbleSorter();
-    
-    void sort(vector<int>& arr);
-    int depth(vector<int>& arr);
-    int getMaxSwaps() const;
-    const vector<pair<int, int>>& getSwapPairs() const;
+    void sort(std::vector<int>& arr) override;
+    std::vector<std::pair<int, int>> generateSwapPairs(int n) override;
+    int getMaxSwaps() const override;
+    int depth(const std::vector<int>& arr) const override;
 };
-#endif /* BubbleSort_hpp */
+
+#endif

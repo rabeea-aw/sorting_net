@@ -1,28 +1,26 @@
+#ifndef MERGE_SORTER_HPP
+#define MERGE_SORTER_HPP
 
-
-#ifndef Merge_sort_hpp
-#define Merge_sort_hpp
-
-#include <stdio.h>
+#include "Sorter.hpp"
 #include <vector>
 #include <utility>
-using namespace std;
 
-class MergeSorter {
+class MergeSorter : public Sorter {
 private:
-    int maxSwaps;
-    vector<pair<int, int>> swapPairs;
-    
-    void merge(vector<int>& arr, int left, int mid, int right);
-    void mergeSort(vector<int>& arr, int left, int right);
+    mutable int maxSwaps;
+    mutable std::vector<std::pair<int, int>> swapPairs;
+
+    void mergeSort(int lo, int n);
+    void merge(int lo, int n);
+    bool isPowerOf2(int n) const;
+    int nextPowerOf2(int n) const;
 
 public:
     MergeSorter();
-    
-    void sort(vector<int>& arr);
-    int depth(vector<int>& arr);
-    int getMaxSwaps() const;
-    const vector<std::pair<int, int>>& getSwapPairs() const;
+    void sort(std::vector<int>& arr) override;
+    std::vector<std::pair<int, int>> generateSwapPairs(int n) override;
+    int getMaxSwaps() const override;
+    int depth(const std::vector<int>& arr) const override;
 };
 
-#endif /* Merge_sort_hpp */
+#endif

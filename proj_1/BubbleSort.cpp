@@ -7,53 +7,32 @@
 
 #include "BubbleSort.hpp"
 
-using namespace std;
+BubbleSorter::BubbleSorter() : swaps(0) {}
 
-BubbleSorter::BubbleSorter() : maxSwaps(0) {}
-
-void BubbleSorter::sort(vector<int>& arr) {
-    swapPairs.clear();
-    if (arr.empty()) return;
-    
-    int n = arr.size();
-    bool swapped;
-    
-    // Bubble sort implementation
-    for (int i = 0; i < n - 1; i++) {
-        swapped = false;
-        for (int j = 0; j < n - i - 1; j++) {
-            if (arr[j] > arr[j + 1]) {
-                // Record the swap pair
-                swapPairs.push_back({j, j + 1});
-                // Perform the swap
-                swap(arr[j], arr[j + 1]);
-                swapped = true;
-            }
-            else{
-                swapPairs.push_back({j, j + 1});
-            }
+void BubbleSorter::sort(std::vector<int>& arr) {
+    swaps = 0;
+    for (const auto& [a, b] : swapPairs) {
+        if (a < arr.size() && b < arr.size() && arr[a] > arr[b]) {
+            std::swap(arr[a], arr[b]);
+            swaps++;
         }
-        // If no swapping occurred, array is already sorted
-        if (!swapped) break;
     }
-    
-    maxSwaps = static_cast<int>(swapPairs.size());
 }
 
-// Calculate depth (longest path from input to output)
-int BubbleSorter::depth(vector<int>& arr) {
-    if (arr.empty()) return 0;
-    
-    // For bubble sort, depth can be considered as the number of passes
-    // In parallel implementation, it could be n-1 in worst case
-    int n = (int)arr.size();
-    return n - 1;  // Worst-case number of passes
+std::vector<std::pair<int, int>> BubbleSorter::generateSwapPairs(int n) {
+    swapPairs.clear();
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            swapPairs.emplace_back(j, j + 1);
+        }
+    }
+    return swapPairs;
 }
 
 int BubbleSorter::getMaxSwaps() const {
-    return maxSwaps;
+    return swapPairs.size();
 }
 
-const vector<pair<int, int>>& BubbleSorter::getSwapPairs() const {
-    return swapPairs;
+int BubbleSorter::depth(const std::vector<int>& arr) const {
+    return arr.size() - 1;
 }

@@ -2,82 +2,95 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
-using namespace std;
-BitonicSorter::BitonicSorter() : maxSwaps(0) {}
+#include <climits>
+#include <iostream>
+#include <algorithm>
+#include <cmath>
+#include <climits>
 
-// Helper function to check if a number is power of 2
-bool BitonicSorter::isPowerOf2(int n) {
+BitonicSorter::BitonicSorter() : maxSwaps(0) {
+    swapPairs.clear();
+}
+
+bool BitonicSorter::isPowerOf2(int n) const {
     return (n > 0) && ((n & (n - 1)) == 0);
 }
 
-// Helper function to get next power of 2
-int BitonicSorter::nextPowerOf2(int n) {
+int BitonicSorter::nextPowerOf2(int n) const {
     return pow(2, ceil(log2(n)));
 }
 
-// Bitonic merge
-void BitonicSorter::bitonicMerge(vector<int>& arr, int low, int cnt, bool dir) {
-    if (cnt > 1) {
-        int k = cnt / 2;
-        for (int i = low; i < low + k; i++) {
-            if ((arr[i] > arr[i + k]) == dir) {
-                swapPairs.push_back({i, i + k});
-                swap(arr[i], arr[i + k]);
-            }
-            else{
-                swapPairs.push_back({i, i + k});
-            }
+void BitonicSorter::generateBitonicPairs(int low, int cnt, bool dir) {
+    if (cnt <= 1) return;
+
+    int k = cnt / 2;
+    // First, generate pairs for the bitonic merge
+    for (int i = 0; i < k; i++) {
+        int a = low + i;
+        int b = low + i + k;
+        if (dir) {
+            swapPairs.emplace_back(a, b); // Ascending: compare a with b
+        } else {
+            swapPairs.emplace_back(b, a); // Descending: compare b with a
         }
-        bitonicMerge(arr, low, k, dir);
-        bitonicMerge(arr, low + k, k, dir);
     }
+
+    // Recursively generate pairs for the two halves
+    generateBitonicPairs(low, k, dir);      // First half
+    generateBitonicPairs(low + k, k, dir);  // Second half
 }
 
-// Bitonic sort recursive
-void BitonicSorter::bitonicSort(vector<int>& arr, int low, int cnt, bool dir) {
-    if (cnt > 1) {
-        int k = cnt / 2;
-        bitonicSort(arr, low, k, true);      // sort in ascending order
-        bitonicSort(arr, low + k, k, false);  // sort in descending order
-        bitonicMerge(arr, low, cnt, dir);
-    }
-}
-
-void BitonicSorter::sort(vector<int>& arr) {
+std::vector<std::pair<int, int>> BitonicSorter::generateSwapPairs(int n) {
     swapPairs.clear();
+    int newSize = nextPowerOf2(n);
+
+    // Generate bitonic sort network
+    for (int size = 2; size <= newSize; size *= 2) {
+        for (int i = 0; i < newSize; i += size) {
+            bool dir = (i / size) % 2 == 0; // Ascending for even groups, descending for odd
+            generateBitonicPairs(i, size, dir);
+        }
+    }
+
+    // Filter swap pairs to only include indices < n
+    std::vector<std::pair<int, int>> filtered;
+    for (const auto& p : swapPairs) {
+        if (p.first < n && p.second < n) {
+            filtered.push_back(p);
+        }
+    }
+    swapPairs = filtered;
+    maxSwaps = swapPairs.size();
+    return swapPairs;
+}
+
+void BitonicSorter::sort(std::vector<int>& arr) {
     int n = arr.size();
-    
-    // If n is not power of 2, pad with INT_MAX
     int newSize = nextPowerOf2(n);
     if (!isPowerOf2(n)) {
         arr.resize(newSize, INT_MAX);
     }
 
-    // Perform bitonic sort
-    bitonicSort(arr, 0, arr.size(), true);
-    
+    // Apply the swap pairs
+    for (const auto& [a, b] : swapPairs) {
+        if (a < arr.size() && b < arr.size() && arr[a] > arr[b]) {
+            std::swap(arr[a], arr[b]);
+        }
+    }
+
     // Trim back to original size if padded
     if (n != arr.size()) {
         arr.resize(n);
     }
-    
-    maxSwaps = swapPairs.size();
-}
-
-// Calculate depth (longest path from input to output)
-int BitonicSorter::depth(vector<int>& arr) {
-    int n = arr.size();
-    int paddedSize = nextPowerOf2(n);
-    
-    // Depth of bitonic sort is log2(n) * (log2(n) + 1) / 2
-    int stages = log2(paddedSize);
-    return stages * (stages + 1) / 2;
 }
 
 int BitonicSorter::getMaxSwaps() const {
     return maxSwaps;
 }
 
-const vector<pair<int, int>>& BitonicSorter::getSwapPairs() const {
-    return swapPairs;
+int BitonicSorter::depth(const std::vector<int>& arr) const {
+    int n = arr.size();
+    int paddedSize = nextPowerOf2(n);
+    int stages = log2(paddedSize);
+    return stages * (stages + 1) / 2;
 }

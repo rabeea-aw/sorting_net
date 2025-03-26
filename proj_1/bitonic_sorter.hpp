@@ -1,27 +1,25 @@
 #ifndef BITONIC_SORTER_HPP
 #define BITONIC_SORTER_HPP
 
+#include "Sorter.hpp"
 #include <vector>
+#include <utility>
 
-#include <climits> // for INT_MAX
-using namespace std;
-class BitonicSorter {
+class BitonicSorter : public Sorter {
 private:
-    vector<pair<int, int>> swapPairs;
-    int maxSwaps;
+    mutable int maxSwaps;
+    mutable std::vector<std::pair<int, int>> swapPairs;
 
-    bool isPowerOf2(int n);
-    int nextPowerOf2(int n);
-    void bitonicMerge(vector<int>& arr, int low, int cnt, bool dir);
-    void bitonicSort(vector<int>& arr, int low, int cnt, bool dir);
+    void generateBitonicPairs(int low, int cnt, bool dir);
+    bool isPowerOf2(int n) const;
+    int nextPowerOf2(int n) const;
 
 public:
     BitonicSorter();
-    
-    void sort(vector<int>& arr);
-    int depth(vector<int>& arr);
-    int getMaxSwaps() const;
-    const vector<std::pair<int, int>>& getSwapPairs() const;
+    void sort(std::vector<int>& arr) override;
+    std::vector<std::pair<int, int>> generateSwapPairs(int n) override;
+    int getMaxSwaps() const override;
+    int depth(const std::vector<int>& arr) const override;
 };
 
-#endif // BITONIC_SORTER_HPP
+#endif
