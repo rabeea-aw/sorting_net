@@ -2,7 +2,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
-
+using namespace std;
 BitonicSorter::BitonicSorter() : maxSwaps(0) {}
 
 // Helper function to check if a number is power of 2
@@ -16,13 +16,13 @@ int BitonicSorter::nextPowerOf2(int n) {
 }
 
 // Bitonic merge
-void BitonicSorter::bitonicMerge(std::vector<int>& arr, int low, int cnt, bool dir) {
+void BitonicSorter::bitonicMerge(vector<int>& arr, int low, int cnt, bool dir) {
     if (cnt > 1) {
         int k = cnt / 2;
         for (int i = low; i < low + k; i++) {
             if ((arr[i] > arr[i + k]) == dir) {
                 swapPairs.push_back({i, i + k});
-                std::swap(arr[i], arr[i + k]);
+                swap(arr[i], arr[i + k]);
             }
             else{
                 swapPairs.push_back({i, i + k});
@@ -34,7 +34,7 @@ void BitonicSorter::bitonicMerge(std::vector<int>& arr, int low, int cnt, bool d
 }
 
 // Bitonic sort recursive
-void BitonicSorter::bitonicSort(std::vector<int>& arr, int low, int cnt, bool dir) {
+void BitonicSorter::bitonicSort(vector<int>& arr, int low, int cnt, bool dir) {
     if (cnt > 1) {
         int k = cnt / 2;
         bitonicSort(arr, low, k, true);      // sort in ascending order
@@ -43,7 +43,7 @@ void BitonicSorter::bitonicSort(std::vector<int>& arr, int low, int cnt, bool di
     }
 }
 
-void BitonicSorter::sort(std::vector<int>& arr) {
+void BitonicSorter::sort(vector<int>& arr) {
     swapPairs.clear();
     int n = arr.size();
     
@@ -65,7 +65,7 @@ void BitonicSorter::sort(std::vector<int>& arr) {
 }
 
 // Calculate depth (longest path from input to output)
-int BitonicSorter::depth(std::vector<int>& arr) {
+int BitonicSorter::depth(vector<int>& arr) {
     int n = arr.size();
     int paddedSize = nextPowerOf2(n);
     
@@ -78,6 +78,6 @@ int BitonicSorter::getMaxSwaps() const {
     return maxSwaps;
 }
 
-const std::vector<std::pair<int, int>>& BitonicSorter::getSwapPairs() const {
+const vector<pair<int, int>>& BitonicSorter::getSwapPairs() const {
     return swapPairs;
 }

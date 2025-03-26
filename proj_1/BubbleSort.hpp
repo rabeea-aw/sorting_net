@@ -15,15 +15,15 @@
 using namespace std;
 class BubbleSorter {
 private:
-    std::vector<std::pair<int, int>> swapPairs;
+    vector<pair<int, int>> swapPairs;
     int maxSwaps;
 
 public:
     BubbleSorter();
     
-    void sort(std::vector<int>& arr);
-    int depth(std::vector<int>& arr);
+    void sort(vector<int>& arr);
+    int depth(vector<int>& arr);
     int getMaxSwaps() const;
-    const std::vector<std::pair<int, int>>& getSwapPairs() const;
+    const vector<pair<int, int>>& getSwapPairs() const;
 };
 #endif /* BubbleSort_hpp */

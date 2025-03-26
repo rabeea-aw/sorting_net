@@ -11,7 +11,7 @@ using namespace std;
 class MergeSorter {
 private:
     int maxSwaps;
-    vector<std::pair<int, int>> swapPairs;
+    vector<pair<int, int>> swapPairs;
     
     void merge(vector<int>& arr, int left, int mid, int right);
     void mergeSort(vector<int>& arr, int left, int right);

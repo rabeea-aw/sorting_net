@@ -27,7 +27,7 @@ public:
     bool is_ok(); // Returns isk status
 
 private:
-    std::vector<std::vector<int>> allGen;
+    vector<vector<int>> allGen;
     int max_depth;
     int maxswap;
     bool isk;

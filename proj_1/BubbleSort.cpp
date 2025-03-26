@@ -54,6 +54,6 @@ int BubbleSorter::getMaxSwaps() const {
     return maxSwaps;
 }
 
-const std::vector<std::pair<int, int>>& BubbleSorter::getSwapPairs() const {
+const vector<pair<int, int>>& BubbleSorter::getSwapPairs() const {
     return swapPairs;
 }
