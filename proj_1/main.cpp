@@ -34,9 +34,9 @@ int main(int argc, const char * argv[]) {
         }
         
     
-    Data_sort ds_oddeven(8, "odd");
+    Data_sort ds_oddeven(4, "odd");
         if (ds_oddeven.cheek()) {
-            cout <<"The size is "<< 8 << " Odd-Even Mergesort - Swaps: " << ds_oddeven.size()
+            cout <<"The size is "<< 4 << " Odd-Even Mergesort - Swaps: " << ds_oddeven.size()
                       << ", Depth: " << ds_oddeven.depth() << "\n";
         } else {
             cout << "Odd-Even failed\n";
