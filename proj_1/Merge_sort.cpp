@@ -1,7 +1,7 @@
 #include "Merge_sort.hpp"
-#include <iostream>
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 #include <climits>
 
 MergeSorter::MergeSorter() : maxSwaps(0) {
@@ -17,79 +17,130 @@ int MergeSorter::nextPowerOf2(int n) const {
 }
 
 void MergeSorter::mergeSort(int lo, int n) {
-    if (n > 1) {
-        int m = n / 2;
-        mergeSort(lo, m);      // Sort first half
-        mergeSort(lo + m, m);  // Sort second half
-        merge(lo, n);          // Merge the two halves
-    }
+    if (n <= 1) return;
+    
+    int mid = n / 2;
+    mergeSort(lo, mid);
+    mergeSort(lo + mid, n - mid);
+    merge(lo, n);
 }
 
 void MergeSorter::merge(int lo, int n) {
     if (n <= 1) return;
-
+    
     int mid = n / 2;
-    // Step 1: Compare elements between the two halves (n/2 with n, n/2 with n+1, etc.)
-    for (int i = 0; i < mid; i++) {
-        int a = lo + i;         // From first half
-        for (int j = 0; j < mid; j++) {
-            int b = lo + mid + j;  // From second half
-            swapPairs.emplace_back(a, b);
+    int p = lo;
+    int q = lo + mid - 1;
+    int r = lo + n - 1;
+    
+    // Create left and right subarrays (L and M)
+    int n1 = q - p + 1;
+    int n2 = r - q;
+    
+    std::vector<int> L(n1);
+    std::vector<int> M(n2);
+    
+    for (int i = 0; i < n1; i++)
+        L[i] = arr[p + i];
+    
+    for (int j = 0; j < n2; j++)
+        M[j] = arr[q + 1 + j];
+    
+    // Merge L and M back into arr
+    int i = 0, j = 0, k = p;
+    
+    while (i < n1 && j < n2) {
+        if (L[i] <= M[j]) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = M[j];
+            // Generate swap pairs for elements in L that are larger
+            for (int m = i; m < n1; m++) {
+                int left_idx = p + m;
+                int right_idx = q + 1 + j;
+                if (left_idx < arr.size() && right_idx < arr.size()) {
+                    swapPairs.emplace_back(left_idx, right_idx);
+                    maxSwaps++;
+                }
+            }
+            j++;
         }
+        k++;
     }
-
-    // Step 2: Compare adjacent elements in the second half (n with n+1, n+1 with n+2, etc.)
-    for (int i = lo + mid; i + 1 < lo + n; i++) {
-        swapPairs.emplace_back(i, i + 1);
+    
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
     }
-
-    // Step 3: Compare adjacent elements in the first half to ensure sorting
-    for (int i = lo; i + 1 < lo + mid; i++) {
-        swapPairs.emplace_back(i, i + 1);
+    
+    while (j < n2) {
+        arr[k] = M[j];
+        j++;
+        k++;
     }
+}
 
-    // Recursively merge subparts if needed
-    merge(lo, mid);
-    merge(lo + mid, n - mid);
+void MergeSorter::sort(std::vector<int>& arr) {
+    this->arr = arr;
+    maxSwaps = 0;
+    swapPairs.clear();
+    
+    int n = arr.size();
+    int newSize = nextPowerOf2(n);
+    if (!isPowerOf2(n)) {
+        this->arr.resize(newSize, INT_MAX);
+    }
+    
+    mergeSort(0, newSize);
+    
+    arr = this->arr;
+    if (n != arr.size()) {
+        arr.resize(n);
+    }
 }
 
 std::vector<std::pair<int, int>> MergeSorter::generateSwapPairs(int n) {
+    std::vector<int> arr(n);
+
+    this->arr = arr;
+    maxSwaps = 0;
     swapPairs.clear();
+    
     int newSize = nextPowerOf2(n);
-
-    // Generate merge sort network
-    mergeSort(0, newSize);
-
-    // Filter swap pairs to only include indices < n
+    if (!isPowerOf2(n)) {
+        this->arr.resize(newSize, INT_MAX);
+    }
+    
+    for (int i = 0; i < newSize; ++i) {
+           if (i < newSize/2 ) {
+               // First half: pair with middle element (4)
+               swapPairs.emplace_back(i, newSize/2);
+           } else {
+               // Second half: pair with next element
+               swapPairs.emplace_back(i, i + 1);
+           }
+       }
+       
+    
+    // Filter swap pairs to only include indices < n and first < second
     std::vector<std::pair<int, int>> filtered;
     for (const auto& p : swapPairs) {
-        if (p.first < n && p.second < n) {
+        if (p.first < n && p.second < n && p.first < p.second) {
             filtered.push_back(p);
         }
     }
     swapPairs = filtered;
     maxSwaps = swapPairs.size();
+    
+    // Print filtered swap pairs
+    std::cout << "Swap Pairs after filtering:\n";
+    for (const auto& p : filtered) {
+        std::cout << "(" << p.first << ", " << p.second << ")\n";
+    }
+    
     return swapPairs;
-}
-
-void MergeSorter::sort(std::vector<int>& arr) {
-    int n = arr.size();
-    int newSize = nextPowerOf2(n);
-    if (!isPowerOf2(n)) {
-        arr.resize(newSize, INT_MAX);
-    }
-
-    // Apply the swap pairs
-    for (const auto& [a, b] : swapPairs) {
-        if (a < arr.size() && b < arr.size() && arr[a] > arr[b]) {
-            std::swap(arr[a], arr[b]);
-        }
-    }
-
-    // Trim back to original size if padded
-    if (n != arr.size()) {
-        arr.resize(n);
-    }
 }
 
 int MergeSorter::getMaxSwaps() const {

@@ -9,6 +9,7 @@ class MergeSorter : public Sorter {
 private:
     mutable int maxSwaps;
     mutable std::vector<std::pair<int, int>> swapPairs;
+    std::vector<int> arr; // Temporary storage for the array being sorted
 
     void mergeSort(int lo, int n);
     void merge(int lo, int n);

@@ -31,15 +31,20 @@ std::vector<int> Data_sort::generateMutation(int i, int n) {
     for (int j = 0; j < n; j++) {
         mutation[j] = (i >> j) & 1;
     }
+    
     return mutation;
 }
 
 bool Data_sort::check() {
     int totalCombinations = 1 << n;
     auto swapPairs = sorter->generateSwapPairs(n);
-
+    
     for (int i = 0; i < totalCombinations; i++) {
         std::vector<int> mutation = generateMutation(i, n);
+        int current_depth = sorter->depth(mutation);
+        if (current_depth > max_depth) {
+            max_depth = current_depth;
+        }
         try {
             // Apply all swap pairs
             for (const auto& pair : swapPairs) {
@@ -70,14 +75,7 @@ int Data_sort::size() {
 }
 
 int Data_sort::depth() {
-    int totalCombinations = 1 << n;
-    for (int i = 0; i < totalCombinations; i++) {
-        std::vector<int> mutation = generateMutation(i, n);
-        int current_depth = sorter->depth(mutation);
-        if (current_depth > max_depth) {
-            max_depth = current_depth;
-        }
-    }
+
     return max_depth;
 }
 

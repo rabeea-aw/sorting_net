@@ -1,12 +1,6 @@
 #include "bitonic_sorter.hpp"
-#include <iostream>
 #include <algorithm>
 #include <cmath>
-#include <climits>
-#include <iostream>
-#include <algorithm>
-#include <cmath>
-#include <climits>
 
 BitonicSorter::BitonicSorter() : maxSwaps(0) {
     swapPairs.clear();
@@ -20,55 +14,61 @@ int BitonicSorter::nextPowerOf2(int n) const {
     return pow(2, ceil(log2(n)));
 }
 
+int greatestPowerOfTwoLessThan(int n) {
+    int k = 1;
+    while (k > 0 && k < n) {
+        k <<= 1;
+    }
+    return k >> 1;
+}
+
 void BitonicSorter::generateBitonicPairs(int low, int cnt, bool dir) {
     if (cnt <= 1) return;
 
-    int k = cnt / 2;
-    // First, generate pairs for the bitonic merge
-    for (int i = 0; i < k; i++) {
-        int a = low + i;
-        int b = low + i + k;
+    // Bitonic merge step
+    int m = greatestPowerOfTwoLessThan(cnt);
+    for (int i = low; i < low + cnt - m; i++) {
+        // Ensure ascending/descending order in swap pairs
         if (dir) {
-            swapPairs.emplace_back(a, b); // Ascending: compare a with b
+            swapPairs.emplace_back(i, i + m); // Ascending: smaller index first
         } else {
-            swapPairs.emplace_back(b, a); // Descending: compare b with a
+            swapPairs.emplace_back(i + m, i); // Descending: larger index first
         }
     }
 
-    // Recursively generate pairs for the two halves
-    generateBitonicPairs(low, k, dir);      // First half
-    generateBitonicPairs(low + k, k, dir);  // Second half
+    // Recursively merge the two parts
+    generateBitonicPairs(low, m, dir);
+    generateBitonicPairs(low + m, cnt - m, dir);
 }
 
 std::vector<std::pair<int, int>> BitonicSorter::generateSwapPairs(int n) {
     swapPairs.clear();
-    int newSize = nextPowerOf2(n);
-
-    // Generate bitonic sort network
-    for (int size = 2; size <= newSize; size *= 2) {
-        for (int i = 0; i < newSize; i += size) {
-            bool dir = (i / size) % 2 == 0; // Ascending for even groups, descending for odd
-            generateBitonicPairs(i, size, dir);
-        }
+    if (n < 2) {
+        maxSwaps = 0;
+        return swapPairs;
     }
 
-    // Filter swap pairs to only include indices < n
-    std::vector<std::pair<int, int>> filtered;
-    for (const auto& p : swapPairs) {
-        if (p.first < n && p.second < n) {
-            filtered.push_back(p);
-        }
-    }
-    swapPairs = filtered;
+    // Recursive bitonic sort
+    auto bitonicSort = [&](int low, int cnt, bool dir, auto& self) -> void {
+        if (cnt <= 1) return;
+
+        int m = cnt / 2;
+        self(low, m, !dir, self);           // Sort first half in opposite direction
+        self(low + m, cnt - m, dir, self);  // Sort second half in desired direction
+        generateBitonicPairs(low, cnt, dir); // Merge the two halves
+    };
+
+    bitonicSort(0, n, true, bitonicSort); // Sort in ascending order
     maxSwaps = swapPairs.size();
     return swapPairs;
 }
 
 void BitonicSorter::sort(std::vector<int>& arr) {
-    int n = arr.size();
-    int newSize = nextPowerOf2(n);
-    if (!isPowerOf2(n)) {
-        arr.resize(newSize, INT_MAX);
+    if (arr.size() < 2) return;
+
+    // Generate swap pairs if not already done
+    if (swapPairs.empty()) {
+        generateSwapPairs(arr.size());
     }
 
     // Apply the swap pairs
@@ -76,11 +76,6 @@ void BitonicSorter::sort(std::vector<int>& arr) {
         if (a < arr.size() && b < arr.size() && arr[a] > arr[b]) {
             std::swap(arr[a], arr[b]);
         }
-    }
-
-    // Trim back to original size if padded
-    if (n != arr.size()) {
-        arr.resize(n);
     }
 }
 
@@ -90,7 +85,17 @@ int BitonicSorter::getMaxSwaps() const {
 
 int BitonicSorter::depth(const std::vector<int>& arr) const {
     int n = arr.size();
-    int paddedSize = nextPowerOf2(n);
-    int stages = log2(paddedSize);
-    return stages * (stages + 1) / 2;
+    if (n < 2) return 0;
+
+    // Calculate depth based on recursive structure
+    auto calculateDepth = [&](int cnt, auto& self) -> int {
+        if (cnt <= 1) return 0;
+        int m = cnt / 2;
+        int mergeDepth = 0;
+        for (int k = greatestPowerOfTwoLessThan(cnt); k >= 1; k >>= 1) {
+            mergeDepth++;
+        }
+        return std::max(self(m, self), self(cnt - m, self)) + mergeDepth;
+    };
+    return calculateDepth(n, calculateDepth);
 }

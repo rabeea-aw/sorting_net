@@ -1,9 +1,9 @@
 #ifndef BITONIC_SORTER_HPP
 #define BITONIC_SORTER_HPP
 
-#include "Sorter.hpp"
 #include <vector>
 #include <utility>
+#include "Sorter.hpp" // Assumed base class
 
 class BitonicSorter : public Sorter {
 private:
