@@ -48,6 +48,7 @@ bool Data_sort::check() {
         try {
             // Apply all swap pairs
             for (const auto& pair : swapPairs) {
+//                std::cout << "(" << pair.first << ",fffff " << pair.second << ")\n";
                 if ( mutation[pair.first] > mutation[pair.second]) {
                     std::swap(mutation[pair.first], mutation[pair.second]);
                 }
@@ -55,7 +56,7 @@ bool Data_sort::check() {
             // Check if the mutation is sorted
             for (size_t j = 1; j < mutation.size(); j++) {
                 if (mutation[j] < mutation[j - 1]) {
-                    std::cout << j-1 <<"xxxxxxxxxxxxxxxxxxxxx";
+                    std::cout << i<<mutation[j - 1] <<"xxxxxxxxxxxxxxxxxxxxx";
                     isk = false;
                     return false;
                 }
