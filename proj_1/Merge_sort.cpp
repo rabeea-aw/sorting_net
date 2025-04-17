@@ -1,7 +1,6 @@
 #include "Merge_sort.hpp"
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 
 MergeSorter::MergeSorter() : maxSwaps(0) {
     swapPairs.clear();
@@ -15,37 +14,26 @@ int MergeSorter::nextPowerOf2(int n) const {
     return pow(2, ceil(log2(n)));
 }
 
-void MergeSorter::generateMergePairs(int low, int cnt) {
-    if (cnt <= 1) return;
-
-    // Split the array into two halves
-    int m = cnt / 2;
-    
-    // Recursively generate pairs for each half
-    generateMergePairs(low, m);
-    generateMergePairs(low + m, cnt - m);
-    
-    // Merge the two sorted halves
-    merge(low, m, low + m, cnt - m);
+void MergeSorter::oddEvenMerge(int lo, int n, int r) {
+    int m = r * 2;
+    if (m < n) {
+        oddEvenMerge(lo, n, m);      // Even subsequence
+        oddEvenMerge(lo + r, n, m);  // Odd subsequence
+        for (int i = lo + r; i + r < lo + n; i += m) {
+            swapPairs.emplace_back(i, i + r);
+        }
+    }
+    else {
+        swapPairs.emplace_back(lo, lo + r);
+    }
 }
 
-void MergeSorter::merge(int lo1, int n1, int lo2, int n2) {
-    int total = n1 + n2;
-    int m = nextPowerOf2(total);
-    
-    // Odd-even merge algorithm
-    for (int k = m / 2; k > 0; k /= 2) {
-        for (int j = k % (m / 2); j + k < total; j += 2 * k) {
-            for (int i = 0; i < k; i++) {
-                int a = lo1 + j + i;
-                int b = lo1 + j + i + k;
-                
-                // Ensure we don't go out of bounds
-                if (b < lo1 + total) {
-                    swapPairs.emplace_back(a, b);
-                }
-            }
-        }
+void MergeSorter::oddEvenMergeSort(int lo, int n) {
+    if (n > 1) {
+        int m = n / 2;
+        oddEvenMergeSort(lo, m);
+        oddEvenMergeSort(lo + m, m);
+        oddEvenMerge(lo, n, 1);
     }
 }
 
@@ -56,26 +44,22 @@ std::vector<std::pair<int, int>> MergeSorter::generateSwapPairs(int n) {
         return swapPairs;
     }
 
-    // Pad to next power of 2 if needed
-    int padded_n = isPowerOf2(n) ? n : nextPowerOf2(n);
+    // Ensure n is a power of 2 for odd-even mergesort
+    int padded_n = nextPowerOf2(n);
     
-    // Generate the merge sort network
-    generateMergePairs(0, padded_n);
+    // Generate the sorting network
+    oddEvenMergeSort(0, padded_n);
     
-    // Filter out pairs that are beyond the original array size
-    std::vector<std::pair<int, int>> validPairs;
+    // Filter out pairs that are out of bounds for the actual array size
+    std::vector<std::pair<int, int>> filteredPairs;
     for (const auto& pair : swapPairs) {
         if (pair.first < n && pair.second < n) {
-            validPairs.push_back(pair);
+            filteredPairs.push_back(pair);
         }
     }
     
-    swapPairs = validPairs;
+    swapPairs = filteredPairs;
     maxSwaps = swapPairs.size();
-    for (const auto& pair : swapPairs) {
-        std::cout <<pair.first<< ","<<pair.second <<"\n";
-    }
-    
     return swapPairs;
 }
 
@@ -101,18 +85,14 @@ int MergeSorter::getMaxSwaps() const {
 
 int MergeSorter::depth(const std::vector<int>& arr) const {
     int n = arr.size();
-    if (n < 2) return 0;
-
-    // Calculate depth based on merge sort network structure
-    auto calculateDepth = [&](int cnt, auto& self) -> int {
-        if (cnt <= 1) return 0;
-        int m = cnt / 2;
-        int mergeDepth = 0;
-        for (int k = nextPowerOf2(cnt); k > 0; k /= 2) {
-            mergeDepth++;
-        }
-        return std::max(self(m, self), self(cnt - m, self)) + mergeDepth;
-    };
+    if (n <= 1) return 0;
     
-    return calculateDepth(n, calculateDepth);
+    // Depth calculation for odd-even mergesort network
+    int d = 0;
+    for (int p = 1; p < n; p <<= 1) {
+        for (int k = p; k >= 1; k >>= 1) {
+            d++;
+        }
+    }
+    return d;
 }

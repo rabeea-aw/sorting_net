@@ -9,10 +9,9 @@ class MergeSorter : public Sorter {
 private:
     mutable int maxSwaps;
     mutable std::vector<std::pair<int, int>> swapPairs;
-    std::vector<int> arr; // Temporary storage for the array being sorted
 
-    void generateMergePairs(int low, int cnt);
-    void merge(int lo1, int n1, int lo2, int n2);
+    void oddEvenMerge(int lo, int n, int r);
+    void oddEvenMergeSort(int lo, int n);
     bool isPowerOf2(int n) const;
     int nextPowerOf2(int n) const;
 

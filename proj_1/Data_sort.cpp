@@ -39,6 +39,11 @@ bool Data_sort::check() {
     int totalCombinations = 1 << n;
     auto swapPairs = sorter->generateSwapPairs(n);
     
+//    std::cout << "Swap pairs:\n";
+//        for (const auto& pair : swapPairs) {
+//            std::cout << "(" << pair.first << ", " << pair.second << ")\n";
+//        }
+    
     for (int i = 0; i < totalCombinations; i++) {
         std::vector<int> mutation = generateMutation(i, n);
         int current_depth = sorter->depth(mutation);
