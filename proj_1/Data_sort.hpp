@@ -3,20 +3,20 @@
 
 #include "Sorter.hpp"
 #include <string>
-
+using namespace std;
 class Data_sort {
 private:
     int n;
     int max_depth;
     int maxswap;
     bool isk;
-    std::string activeSorter;
+    string activeSorter;
     Sorter* sorter;
 
-    std::vector<int> generateMutation(int i, int n);
+    vector<int> generateMutation(int i, int n);
 
 public:
-    Data_sort(int n, std::string sorterName);
+    Data_sort(int n, string sorterName);
     ~Data_sort();
     bool check();
     int size();

@@ -2,7 +2,6 @@
 #include "bitonic_sorter.hpp"
 #include "Merge_sort.hpp"
 #include "BubbleSort.hpp"
-#include "OddEvenSorter.hpp"
 #include "Data_sort.hpp"
 #include <stdexcept>
 #include <iostream>
@@ -14,8 +13,6 @@ Data_sort::Data_sort(int n, std::string sorterName) : n(n), max_depth(0), maxswa
         sorter = new MergeSorter();
     } else if (sorterName == "bubble") {
         sorter = new BubbleSorter();
-    } else if (sorterName == "odd") {
-        sorter = new OddEvenSorter();
     } else {
         throw std::invalid_argument("Unknown sorter: " + sorterName);
     }
