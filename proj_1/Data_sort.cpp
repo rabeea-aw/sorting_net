@@ -22,7 +22,7 @@ Data_sort::~Data_sort() {
     delete sorter;
 }
 
-std::vector<int> Data_sort::generateMutation(int i, int n) {
+std::vector<int> Data_sort::generateMutation(long int i, int n) {
     
     std::vector<int> mutation(n);
     for (int j = 0; j < n; j++) {
@@ -33,7 +33,7 @@ std::vector<int> Data_sort::generateMutation(int i, int n) {
 }
 
 bool Data_sort::check() {
-    int totalCombinations = 1 << n;
+    long int totalCombinations = 1 << n;
     auto swapPairs = sorter->generateSwapPairs(n);
     
 //    std::cout << "Swap pairs:\n";
@@ -41,12 +41,12 @@ bool Data_sort::check() {
 //            std::cout << "(" << pair.first << ", " << pair.second << ")\n";
 //        }
     
-    for (int i = 0; i < totalCombinations; i++) {
+    for (long int i = 0; i < totalCombinations; i++) {
         std::vector<int> mutation = generateMutation(i, n);
-        int current_depth = sorter->depth(mutation);
-        if (current_depth > max_depth) {
-            max_depth = current_depth;
-        }
+//        int current_depth = sorter->depth(mutation);
+//        if (current_depth > max_depth) {
+//            max_depth = current_depth;
+//        }
         try {
             // Apply all swap pairs
             for (const auto& pair : swapPairs) {
@@ -78,7 +78,8 @@ int Data_sort::size() {
 }
 
 int Data_sort::depth() {
-
+    std::vector<int> dummy(n, 0); // A dummy array of size n
+    max_depth = sorter->depth(dummy);
     return max_depth;
 }
 

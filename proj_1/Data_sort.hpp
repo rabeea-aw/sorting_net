@@ -13,7 +13,7 @@ private:
     string activeSorter;
     Sorter* sorter;
 
-    vector<int> generateMutation(int i, int n);
+    vector<int> generateMutation(long int i, int n);
 
 public:
     Data_sort(int n, string sorterName);
