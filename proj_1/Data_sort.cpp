@@ -8,18 +8,21 @@
 
 Data_sort::Data_sort(int n, std::string sorterName) : n(n), max_depth(0), maxswap(0), isk(false), activeSorter(sorterName),totalCombinations(1ULL << n) {
     if (sorterName == "bitonic") {
-        sorter = new BitonicSorter();
+//        sorter = new BitonicSorter();
+        allSwapPairs=(new BitonicSorter())->generateSwapPairs(n);
     } else if (sorterName == "merge") {
-        sorter = new MergeSorter();
+//        sorter = new MergeSorter();
+        allSwapPairs=(new MergeSorter())->generateSwapPairs(n);
     } else if (sorterName == "bubble") {
-        sorter = new BubbleSorter();
+//        sorter = new BubbleSorter();
+        allSwapPairs=(new BubbleSorter())->generateSwapPairs(n);
     } else {
         throw std::invalid_argument("Unknown sorter: " + sorterName);
     }
 }
 
 Data_sort::~Data_sort() {
-    delete sorter;
+//    delete sorter;
 }
 
 std::vector<int> Data_sort::generateMutation(long int i, int n) {
@@ -33,22 +36,12 @@ std::vector<int> Data_sort::generateMutation(long int i, int n) {
 }
 
 bool Data_sort::check() {
-    auto swapPairs = sorter->generateSwapPairs(n);
-    
-//    std::cout << "Swap pairs:\n";
-//        for (const auto& pair : swapPairs) {
-//            std::cout << "(" << pair.first << ", " << pair.second << ")\n";
-//        }
-    
+
     for (long int i = 0; i < totalCombinations; i++) {
         std::vector<int> mutation = generateMutation(i, n);
-//        int current_depth = sorter->depth(mutation);
-//        if (current_depth > max_depth) {
-//            max_depth = current_depth;
-//        }
         try {
             // Apply all swap pairs
-            for (const auto& pair : swapPairs) {
+            for (const auto& pair : allSwapPairs) {
 //                std::cout << "(" << pair.first << ",fffff " << pair.second << ")\n";
                 if ( mutation[pair.first] > mutation[pair.second]) {
                     std::swap(mutation[pair.first], mutation[pair.second]);
@@ -72,14 +65,29 @@ bool Data_sort::check() {
 }
 
 int Data_sort::size() {
-    maxswap = sorter->getMaxSwaps();
-    return maxswap;
+//    maxswap = sorter->getMaxSwaps();
+    return allSwapPairs.size();
 }
 
 int Data_sort::depth() {
-    std::vector<int> dummy(n, 0); // A dummy array of size n
-    max_depth = sorter->depth(dummy);
-    return max_depth;
+//    int size = 1 << n; // Number of elements = 2^n
+        std::vector<int> depth(totalCombinations, 0); // Initialize depth[i] = 0
+        int total_depth = 0;
+
+        for (size_t j = 0; j < allSwapPairs.size(); ++j) {
+            int i1 = allSwapPairs[j].first;
+            int i2 = allSwapPairs[j].second;
+            if (i1 >= totalCombinations || i2 >= totalCombinations) {
+                throw std::out_of_range("Invalid comparator indices");
+            }
+            int new_depth = 1 + std::max(depth[i1], depth[i2]);
+            depth[i1] = new_depth;
+            depth[i2] = new_depth;
+            total_depth = std::max(total_depth, new_depth);
+        }
+
+        max_depth = total_depth;
+        return total_depth;
 }
 
 bool Data_sort::is_ok() {

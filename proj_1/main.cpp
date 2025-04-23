@@ -4,7 +4,7 @@ using namespace std;
 int main() {
     try {
         vector<std::string> sorters = {"bitonic", "merge", "bubble"};
-        int n = 16;
+        int n = 22;
 
         for (const auto& sorter : sorters) {
             cout << "Testing sorter: " << sorter << "\n";

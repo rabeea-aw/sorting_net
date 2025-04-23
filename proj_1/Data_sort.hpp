@@ -12,7 +12,7 @@ private:
     bool isk;
     string activeSorter;
     unsigned long long totalCombinations;
-    vector<vector<pair<int, int>>> allSwapPairs; // Store swapPairs for each sorter instance
+    std::vector<std::pair<int, int>>  allSwapPairs; // Store swapPairs for each sorter instance
     Sorter* sorter;
 
     vector<int> generateMutation(long int i, int n);
