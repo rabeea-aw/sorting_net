@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <iostream>
 
-Data_sort::Data_sort(int n, std::string sorterName) : n(n), max_depth(0), maxswap(0), isk(false), activeSorter(sorterName) {
+Data_sort::Data_sort(int n, std::string sorterName) : n(n), max_depth(0), maxswap(0), isk(false), activeSorter(sorterName),totalCombinations(1ULL << n) {
     if (sorterName == "bitonic") {
         sorter = new BitonicSorter();
     } else if (sorterName == "merge") {
@@ -33,7 +33,6 @@ std::vector<int> Data_sort::generateMutation(long int i, int n) {
 }
 
 bool Data_sort::check() {
-    long int totalCombinations = 1 << n;
     auto swapPairs = sorter->generateSwapPairs(n);
     
 //    std::cout << "Swap pairs:\n";
