@@ -13,7 +13,7 @@ private:
     string activeSorter;
     unsigned long long totalCombinations;
     std::vector<std::pair<int, int>>  allSwapPairs; // Store swapPairs for each sorter instance
-    Sorter* sorter;
+//    Sorter* sorter;
 
     vector<int> generateMutation(long int i, int n);
 
